@@ -97,6 +97,15 @@ public class WhatsappKeysManager {
 
         return new WhatsappKeysManager(Base64.getEncoder().encodeToString(BinaryArray.random(16).data()), CypherUtils.calculateRandomKeyPair(), null, null, null, null);
     }
+    
+    public static WhatsappKeysManager fromPreferences(String user) {
+        var preferences = Preferences.userRoot().get(PREFERENCES_PATH+user, null);
+        if (preferences != null) {
+            return fromJson(preferences);
+        }
+
+        return new WhatsappKeysManager(Base64.getEncoder().encodeToString(BinaryArray.random(16).data()), CypherUtils.calculateRandomKeyPair(), null, null, null, null);
+    }
 
     /**
      * Checks if the serverToken and clientToken are not null
@@ -121,6 +130,14 @@ public class WhatsappKeysManager {
     public void serialize(){
         try {
             Preferences.userRoot().put(PREFERENCES_PATH, JACKSON_WRITER.writeValueAsString(this));
+        } catch (JsonProcessingException exception) {
+            throw new RuntimeException("WhatsappAPI: Cannot serialize WhatsappKeysManager to JSON", exception);
+        }
+    }
+    
+    public void serialize(String user){
+        try {
+            Preferences.userRoot().put(PREFERENCES_PATH+user, JACKSON_WRITER.writeValueAsString(this));
         } catch (JsonProcessingException exception) {
             throw new RuntimeException("WhatsappAPI: Cannot serialize WhatsappKeysManager to JSON", exception);
         }
