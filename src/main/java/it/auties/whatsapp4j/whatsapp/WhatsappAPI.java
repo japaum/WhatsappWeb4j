@@ -31,13 +31,16 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.experimental.Accessors;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
 
 import static it.auties.whatsapp4j.utils.WhatsappUtils.*;
 
@@ -52,7 +55,6 @@ public class WhatsappAPI {
     private final @NonNull WhatsappWebSocket socket;
     private final @NonNull WhatsappConfiguration configuration;
     private final @Getter @NonNull WhatsappDataManager manager;
-
     /**
      * Creates a new WhatsappAPI with default configuration
      */
@@ -78,6 +80,7 @@ public class WhatsappAPI {
         this(WhatsappConfiguration.defaultOptions(), manager);
     }
 
+    
     /**
      * Creates a new WhatsappAPI with the {@code configuration} and {@code manager} provided
      *
@@ -99,6 +102,20 @@ public class WhatsappAPI {
         return socket.whatsappKeys();
     }
 
+    
+    public boolean isConnected() {
+    	return socket != null && socket.loggedIn();
+    }
+    
+    public boolean isAlive() {
+    	try {
+    		return socket != null && socket.session() != null && socket.session().isOpen();
+    	}catch (Exception e) {
+    		e.printStackTrace();
+		}
+    	return false;
+    }
+    
     /**
      * Opens a connection with Whatsapp Web's WebSocket if a previous connection doesn't exist
      *

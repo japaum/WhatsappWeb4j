@@ -14,6 +14,7 @@ import it.auties.whatsapp4j.response.model.binary.BinaryResponseModel;
 import it.auties.whatsapp4j.response.model.common.Response;
 import it.auties.whatsapp4j.response.model.json.JsonResponse;
 import it.auties.whatsapp4j.utils.WhatsappUtils;
+import it.auties.whatsapp4j.utils.internal.UsersInstancesUtils;
 import it.auties.whatsapp4j.whatsapp.internal.WhatsappWebSocket;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -37,7 +38,7 @@ import java.util.stream.Stream;
 @Data
 @Accessors(fluent = true)
 public class WhatsappDataManager {
-    private static final @Getter WhatsappDataManager singletonInstance = new WhatsappDataManager(Executors.newSingleThreadExecutor(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), Instant.now().getEpochSecond());
+//    private  final @Getter WhatsappDataManager singletonInstance = new WhatsappDataManager(Executors.newSingleThreadExecutor(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), Instant.now().getEpochSecond());
     private final @NonNull ExecutorService requestsService;
     private final @NonNull List<Chat> chats;
     private final @NonNull List<Contact> contacts;
@@ -47,7 +48,7 @@ public class WhatsappDataManager {
     private String phoneNumberJid;
     private MediaConnection mediaConnection;
     private long tag;
-
+    private WhatsappDataManager manager;
     /**
      * Queries the first contact whose jid is equal to {@code jid}
      *
@@ -60,7 +61,17 @@ public class WhatsappDataManager {
                 .filter(e -> Objects.equals(e.jid(), WhatsappUtils.parseJid(jid)))
                 .findAny();
     }
+    
+    public static WhatsappDataManager instance() {
+    	return new WhatsappDataManager(Executors.newSingleThreadExecutor(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), Instant.now().getEpochSecond());
+    }
+    
+    public static WhatsappDataManager  singletonInstance() {
+    	return new UsersInstancesUtils().getDataManager();
+    }
 
+    
+    
     /**
      * Queries the first contact whose name is equal to {@code name}
      *
@@ -642,4 +653,8 @@ public class WhatsappDataManager {
     private void callOnListenerThread(@NonNull Runnable runnable) {
         requestsService.execute(runnable);
     }
+
+	public void setManager(WhatsappDataManager manager) {
+		this.manager = manager;
+	}
 }

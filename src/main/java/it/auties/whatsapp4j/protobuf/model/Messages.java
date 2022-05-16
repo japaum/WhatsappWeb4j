@@ -28,7 +28,7 @@ public class Messages extends ArrayList<MessageInfo> {
      * @param message the first non null entry to add to this collection
      */
     public Messages(@NonNull MessageInfo message) {
-        add(message);
+        add(message); 
     }
 
     /**

@@ -29,4 +29,7 @@ open module whatsapp4j {
     requires transitive java.logging;
     requires static lombok;
     requires static jdk.unsupported;
+	requires spring.beans;
+	requires spring.core;
+	requires org.apache.tomcat.embed.core;
 }
